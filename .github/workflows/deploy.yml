@@ -8,6 +8,8 @@
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   # TODO C1: run on every push to the main branch, and also by hand
   # (workflow_dispatch:).
   workflow_dispatch:
@@ -40,7 +42,12 @@ jobs:
         # Then pass each CMS value with --dart-define, for example
         #   --dart-define=CMS=${{ vars.CMS }}
         #   --dart-define=CMS_TOKEN=${{ secrets.CMS_TOKEN }}
-        run: flutter build web --release
+        run: >-
+          flutter build web --release
+            --base-href "/${{ github.event.repository.name }}/"
+            --dart-define=OMDB_KEY=${{ secrets.OMDB_KEY }}
+            --dart-define=CMS_SPACE=${{ vars.CMS_SPACE }}
+            --dart-define=CMS_TOKEN=${{ secrets.CMS_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
