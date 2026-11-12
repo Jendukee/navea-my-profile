@@ -37,6 +37,38 @@ On the Books or Movies tab, search with at least three characters. Results
 load after typing pauses for half a second. Use the copy button on a result to
 copy its external ID for a Contentful pick.
 
+## Deploy to GitHub Pages
+
+Set the repository's Pages source to **GitHub Actions**. Under **Settings >
+Secrets and variables > Actions**, add the `CMS_URL` variable with the full
+Contentful entries endpoint, for example
+`https://cdn.contentful.com/spaces/<space-id>/environments/master/entries`.
+Add `CMS_TOKEN` and `OMDB_KEY` as Actions secrets. The workflow builds for the
+repository's GitHub Pages path and deploys after tests pass.
+
+The local `CMS_SPACE` configuration remains supported; CI uses `CMS_URL`.
+During setup, the workflow initially supplied `CMS_SPACE` instead of the
+requested `CMS_URL`, so the Contentful client now accepts either form. Network
+covers and posters use Flutter's HTML-image fallback on web for servers with
+restrictive CORS policies.
+
+Build a phone-installable Android release with:
+
+```powershell
+flutter build apk --release --dart-define-from-file=cms.json
+```
+
+The APK is written to `build/app/outputs/flutter-apk/app-release.apk`.
+
+## Is the OMDb key secret?
+
+An OMDb key included at build time can be extracted from the downloaded web
+JavaScript and used to consume the key owner's API quota. A GitHub Actions
+secret prevents the key from being committed, but does not hide it in a
+client-side app. Rotate the key if it is exposed, and protect future keys by
+calling OMDb through a server-side proxy or by using a provider with safe
+client-side restrictions.
+
 ## Tests
 
 ```powershell

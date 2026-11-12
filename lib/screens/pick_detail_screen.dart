@@ -89,6 +89,7 @@ class _PickDetailScreenState extends State<PickDetailScreen> {
                         details.imageUrl!,
                         height: 280,
                         fit: BoxFit.contain,
+                        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
                         errorBuilder: (_, _, _) => Icon(
                           widget.pick.kind == 'book'
                               ? Icons.book

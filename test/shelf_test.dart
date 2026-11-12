@@ -263,6 +263,28 @@ void main() {
     expect(picks.single.note, 'A wonderful adventure.');
   });
 
+  test('Contentful pick source accepts the configured entries URL', () async {
+    late http.Request request;
+    final source = ContentfulPickSource(
+      spaceId: '',
+      url:
+          'https://cdn.contentful.com/spaces/space/environments/master/entries',
+      token: 'delivery-token',
+      client: MockClient((sent) async {
+        request = sent;
+        return http.Response('{"items":[]}', 200);
+      }),
+    );
+    addTearDown(source.close);
+
+    await source.fetchPicks();
+
+    expect(request.url.host, 'cdn.contentful.com');
+    expect(request.url.path, '/spaces/space/environments/master/entries');
+    expect(request.url.queryParameters['content_type'], 'pick');
+    expect(request.headers['Authorization'], 'Bearer delivery-token');
+  });
+
   testWidgets('Shelf has three tabs and My Picks shows CMS results', (
     tester,
   ) async {

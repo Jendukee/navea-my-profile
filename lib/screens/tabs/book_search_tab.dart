@@ -125,6 +125,7 @@ class _BookCover extends StatelessWidget {
       'https://covers.openlibrary.org/b/id/$coverId-M.jpg',
       width: 48,
       fit: BoxFit.cover,
+      webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
       errorBuilder: (_, _, _) => const Icon(Icons.menu_book_outlined, size: 40),
     );
   }

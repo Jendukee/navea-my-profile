@@ -7,6 +7,7 @@ import 'api_exception.dart';
 import 'pick_source.dart';
 
 const cmsName = String.fromEnvironment('CMS');
+const cmsUrl = String.fromEnvironment('CMS_URL');
 const cmsSpace = String.fromEnvironment('CMS_SPACE');
 const cmsToken = String.fromEnvironment('CMS_TOKEN');
 const cmsEnvironment = String.fromEnvironment(
@@ -18,28 +19,20 @@ class ContentfulPickSource implements PickSource {
   ContentfulPickSource({
     required this.spaceId,
     required this.token,
+    this.url = '',
     this.environment = 'master',
     http.Client? client,
   }) : _client = client ?? http.Client();
 
   final String spaceId;
   final String token;
+  final String url;
   final String environment;
   final http.Client _client;
 
   @override
   Future<List<Pick>> fetchPicks() async {
-    if (spaceId.isEmpty) {
-      throw const ApiException(
-        'CMS_SPACE is missing. Configure your Contentful space ID.',
-      );
-    }
-
-    final uri = Uri.https(
-      'cdn.contentful.com',
-      '/spaces/$spaceId/environments/$environment/entries',
-      {'content_type': 'pick', 'limit': '100'},
-    );
+    final uri = _entriesUri();
     final headers = <String, String>{};
     if (token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
@@ -70,6 +63,33 @@ class ContentfulPickSource implements PickSource {
   }
 
   void close() => _client.close();
+
+  Uri _entriesUri() {
+    if (url.isNotEmpty) {
+      final endpoint = Uri.tryParse(url);
+      if (endpoint == null ||
+          endpoint.scheme != 'https' ||
+          !endpoint.hasAuthority) {
+        throw const ApiException(
+          'CMS_URL must be an absolute HTTPS Contentful entries URL.',
+        );
+      }
+      return endpoint.replace(
+        queryParameters: {'content_type': 'pick', 'limit': '100'},
+      );
+    }
+
+    if (spaceId.isEmpty) {
+      throw const ApiException(
+        'CMS_URL or CMS_SPACE is missing. Configure your Contentful endpoint.',
+      );
+    }
+    return Uri.https(
+      'cdn.contentful.com',
+      '/spaces/$spaceId/environments/$environment/entries',
+      {'content_type': 'pick', 'limit': '100'},
+    );
+  }
 }
 
 ContentfulPickSource createPickSource() {
@@ -81,6 +101,7 @@ ContentfulPickSource createPickSource() {
   return ContentfulPickSource(
     spaceId: cmsSpace,
     token: cmsToken,
+    url: cmsUrl,
     environment: cmsEnvironment,
   );
 }

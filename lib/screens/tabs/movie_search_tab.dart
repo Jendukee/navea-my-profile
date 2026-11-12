@@ -136,6 +136,7 @@ class _MoviePoster extends StatelessWidget {
       poster,
       width: 48,
       fit: BoxFit.cover,
+      webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
       errorBuilder: (_, _, _) => const Icon(Icons.movie, size: 40),
     );
   }
