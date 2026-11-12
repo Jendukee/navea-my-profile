@@ -39,10 +39,10 @@ jobs:
       - name: Build the web app
         run: >-
           flutter build web --release
-            --base-href "/${{ github.event.repository.name }}/"
-            --dart-define=OMDB_KEY=${{ secrets.OMDB_KEY }}
-            --dart-define=CMS_URL=${{ vars.CMS_URL }}
-            --dart-define=CMS_TOKEN=${{ secrets.CMS_TOKEN }}
+          --base-href "/${{ github.event.repository.name }}/"
+          --dart-define=OMDB_KEY=${{ secrets.OMDB_KEY }}
+          --dart-define=CMS_URL=${{ vars.CMS_URL }}
+          --dart-define=CMS_TOKEN=${{ secrets.CMS_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
