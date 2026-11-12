@@ -37,11 +37,6 @@ jobs:
       # A failing test stops the job here: nothing is deployed.
       - run: flutter test
       - name: Build the web app
-        # TODO C2: GitHub Pages serves the site from /<repository name>/,
-        # so add --base-href "/${{ github.event.repository.name }}/".
-        # Then pass each CMS value with --dart-define, for example
-        #   --dart-define=CMS=${{ vars.CMS }}
-        #   --dart-define=CMS_TOKEN=${{ secrets.CMS_TOKEN }}
         run: >-
           flutter build web --release
             --base-href "/${{ github.event.repository.name }}/"
